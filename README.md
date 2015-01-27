@@ -1,2 +1,31 @@
 advisor
 ========
+A simple Hapi plugin for caching NodeSecurity Advisory data.
+
+
+### Basic Example
+```javascript
+var Hapi = require('hapi');
+var advisor = require('advisor');
+
+var server = new Hapi.Server();
+server.connection({ port: 8000 });
+
+server.register(
+	{
+		register: advisor,
+	    options: {
+	        /*interval: 50,
+	        url: 'http://localhost:8000'*/
+	    }
+	},
+	function (err) {
+		if (err) { throw err; }
+
+		server.start(function (err) {
+			if (err) { throw err; }
+            console.log('Server started at: ' + server.info.uri);
+		});
+	}
+);
+```
