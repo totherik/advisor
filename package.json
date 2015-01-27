@@ -1,6 +1,6 @@
 {
   "name": "advisor",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A NodeSecurity Advisory caching server.",
   "main": "dist/index.js",
   "bin": "server.js",
