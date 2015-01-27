@@ -1,0 +1,14 @@
+{
+  "name": "advisor",
+  "version": "1.0.0",
+  "description": "A NodeSecurity Advisory caching server.",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "author": "Erik Toth <totheriK@gmail.com>",
+  "license": "ISC"
+}
