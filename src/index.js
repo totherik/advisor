@@ -17,9 +17,7 @@ let advisor = function (server, options, next) {
         function (data, _, done) {
             advisories = data;
 
-            let next = new Date(Date.now() + source.interval);
-            server.log(['info', 'advisor'], `Advisories updated. Next update: ${next.toString()}`);
-
+            server.log(['info', 'advisor'], `Advisories updated.`);
             done();
         }
     ));

@@ -35,8 +35,6 @@ export default class GitHub extends Readable {
         setTimeout(() => {
             this._update();
         }, Math.max(0, remaining));
-
-        this.lastUpdate = now;
     }
 
     _update() {
@@ -47,8 +45,11 @@ export default class GitHub extends Readable {
         };
 
         Wreck.get(this.url, options, (err, res, payload) => {
+
             if (err) {
                 this.emit('error', err);
+                this.lastUpdate = Date.now();
+                this._read();
                 return;
             }
 
@@ -59,13 +60,6 @@ export default class GitHub extends Readable {
 
                     let files = [];
 
-                    //// NOTE: Can only be used with 6to5-node because Symbols.
-                    //for (let { type, download_url: url } of payload) {
-                    //    if (type === 'file') {
-                    //        files.push(this._download(url));
-                    //    }
-                    //}
-                    //// So instead ...
                     payload.forEach(({ type, download_url: url }) => {
                         if (type === 'file') {
                             files.push(this._download(url));
@@ -74,17 +68,32 @@ export default class GitHub extends Readable {
 
                     Promise
                         .all(files)
-                        .then(this.push.bind(this), this.emit.bind(this, 'error'));
+                        .then(
+                            data => {
+                                this.lastUpdate = Date.now();
+                                this.push(data);
+                            },
+                            err => {
+                                this.lastUpdate = Date.now();
+                                this.emit('error', err);
+                                this._read();
+                            }
+                        );
                     break;
 
                 case 304:
-                    // Not modified, so no new data for now.
+                    // Not modified, so no new data for now. Reset.
+                    console.log('304');
+                    this.lastUpdate = Date.now();
+                    this._read();
                     break;
 
                 default:
                     let error = new Error(payload && payload.message ? payload.message : 'GitHub read error.');
                     error.code = res.statusCode;
+                    this.lastUpdate = Date.now();
                     this.emit('error', error);
+                    this._read();
                     break;
             }
         });
