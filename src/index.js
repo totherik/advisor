@@ -5,15 +5,25 @@ import pkg from '../package.json'
 
 
 let advisor = function (server, options, next) {
-    let source = new GitHub(options.url, options.interval);
+
     let advisories = [];
+    let source = new GitHub(options.url, options.interval);
+
+    source.on('error', function (err) {
+        server.log(['error', 'advisor'], err);
+    });
 
     source.pipe(Through.obj(
         function (data, _, done) {
             advisories = data;
+
+            let next = new Date(Date.now() + source.interval);
+            server.log(['info', 'advisor'], `Advisories updated. Next update: ${next.toString()}`);
+
             done();
         }
     ));
+
 
     server.route({
 

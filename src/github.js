@@ -1,5 +1,6 @@
 import Url from 'url';
 import Wreck from 'wreck';
+import Promise from 'promise';
 import { Readable } from 'stream';
 import metamarked from 'meta-marked';
 
@@ -15,7 +16,7 @@ export default class GitHub extends Readable {
 
         this.interval = interval;
         this.url = url;
-        this.lastUpdate = Date.now();
+        this.lastUpdate = Date.now() - this.interval;
         this.headers = {
             'User-Agent': 'node.js',
             'If-None-Match': null,
@@ -58,11 +59,18 @@ export default class GitHub extends Readable {
 
                     let files = [];
 
-                    for (let { type, download_url: url } of payload) {
+                    //// NOTE: Can only be used with 6to5-node because Symbols.
+                    //for (let { type, download_url: url } of payload) {
+                    //    if (type === 'file') {
+                    //        files.push(this._download(url));
+                    //    }
+                    //}
+                    //// So instead ...
+                    payload.forEach(({ type, download_url: url }) => {
                         if (type === 'file') {
                             files.push(this._download(url));
                         }
-                    }
+                    });
 
                     Promise
                         .all(files)
