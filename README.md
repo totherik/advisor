@@ -1,9 +1,9 @@
 advisor
 ========
-A simple Hapi plugin for caching NodeSecurity Advisory data.
+A simple Hapi application/plugin for caching NodeSecurity Advisory data.
 
 
-### Basic Example
+### Run as a Plugin
 ```javascript
 var Hapi = require('hapi');
 var advisor = require('advisor');
@@ -29,3 +29,12 @@ server.register(
 	}
 );
 ```
+
+### Run Standalone
+```bash
+$ npm i -g advisor
+# ...
+$ advisor
+#...
+```
+
