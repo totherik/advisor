@@ -45,11 +45,21 @@ export default class GitHub extends Readable {
         };
 
         Wreck.get(this.url, options, (err, res, payload) => {
+            let resolve = data => {
+                this.lastUpdate = Date.now();
+                this.push(data);
+            };
 
-            if (err) {
-                this.emit('error', err);
+            let reset = err => {
+                if (err) {
+                    this.emit('error', err);
+                }
                 this.lastUpdate = Date.now();
                 this._read();
+            };
+
+            if (err) {
+                reset(err);
                 return;
             }
 
@@ -68,32 +78,18 @@ export default class GitHub extends Readable {
 
                     Promise
                         .all(files)
-                        .then(
-                            data => {
-                                this.lastUpdate = Date.now();
-                                this.push(data);
-                            },
-                            err => {
-                                this.lastUpdate = Date.now();
-                                this.emit('error', err);
-                                this._read();
-                            }
-                        );
+                        .then(resolve, reset);
                     break;
 
                 case 304:
                     // Not modified, so no new data for now. Reset.
-                    console.log('304');
-                    this.lastUpdate = Date.now();
-                    this._read();
+                    reset();
                     break;
 
                 default:
                     let error = new Error(payload && payload.message ? payload.message : 'GitHub read error.');
                     error.code = res.statusCode;
-                    this.lastUpdate = Date.now();
-                    this.emit('error', error);
-                    this._read();
+                    reset(error);
                     break;
             }
         });
