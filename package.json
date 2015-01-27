@@ -2,13 +2,36 @@
   "name": "advisor",
   "version": "1.0.0",
   "description": "A NodeSecurity Advisory caching server.",
-  "main": "server.js",
+  "main": "dist/index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "tape test/*.js"
+    "test": "npm run compile && 6to5-node test/harness.js test/**/*-test.js",
+    "start": "npm run compile && 6to5-node ./server.js",
+    "compile": "6to5 --modules common --out-dir dist src"
   },
   "author": "Erik Toth <totheriK@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/totherik/advisor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/totherik/advisor/issues"
+  },
+  "homepage": "https://github.com/totherik/advisor",
+  "devDependencies": {
+    "6to5": "^2.13.7",
+    "glob": "^4.3.5",
+    "hapi": "^8.1.0",
+    "tape": "^3.4.0"
+  },
+  "dependencies": {
+    "etag": "^1.5.1",
+    "meta-marked": "^0.3.3",
+    "promise": "^6.1.0",
+    "through2": "^0.6.3",
+    "wreck": "^5.1.0"
+  }
 }
