@@ -48,16 +48,24 @@ let advisor = function (server, options, next) {
 
     let assign = Through.obj(
         function (data, _, done) {
-            advisories = data;
             server.log(['info', 'advisor'], 'Advisories updated.');
+            this.push(advisories = data);
             done();
         }
     );
 
     // Start piping and let run forever.
-    source
-        .pipe(transform)
-        .pipe(assign);
+    let readable = source.pipe(transform).pipe(assign);
+
+
+    server.expose('createReadStream', function () {
+        return readable.pipe(Through.obj(
+            function (data, _, done) {
+                this.push(data);
+                done();
+            }
+        ));
+    });
 
 
     server.route({
