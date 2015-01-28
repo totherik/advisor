@@ -41,7 +41,7 @@ $ advisor
 ### Plugin API
 
 #### createReadStream
-Creates a readable stream that returns advisories as their updated.
+Creates a readable stream that returns advisories as they're updated.
 ```javascript
 server.plugins.advisor.createReadStream().pipe(through.obj(advisories, _, done) {
 	// ...
