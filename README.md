@@ -43,7 +43,7 @@ $ advisor
 #### createReadStream
 Creates a readable stream that returns advisories as their updated.
 ```javascript
-server.plugins.advisor.createReadStream().pip(through.obj(advisories, _, done) {
+server.plugins.advisor.createReadStream().pipe(through.obj(advisories, _, done) {
 	// ...
 	done();
 });
